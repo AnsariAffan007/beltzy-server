@@ -68,7 +68,7 @@ app.post('/order', verifyToken('buyer'), async (req, res) => {
         const savedOrders = await Promise.all(ordersArray);
     }
     catch (e) {
-        console.log(e.message);
+        res.send(e)
     }
     // Decrementing product stocks.
     await Product.updateMany(
@@ -123,7 +123,6 @@ app.post("/buyer-login", async (req, res, next) => {
             buyer.role = 'buyer';
             Jwt.sign({ buyer }, process.env.JWT_KEY, { expiresIn: '2h' }, (error, token) => {
                 if (error) {
-                    console.log(error);
                     res.send(error);
                 }
                 else {
@@ -200,7 +199,6 @@ app.post('/seller-register', async (req, res, next) => {
 })
 
 app.post('/seller-login', async (req, res) => {
-    // console.log(req.body);
     let seller = await Seller.findOne({ username: req.body.username });
     if (!seller) {
         return res.status(401).send({ type: 'username', message: "Username doesn't exist !" });
@@ -226,9 +224,7 @@ app.post('/verify-otp', async (req, res, next) => {
     }
     let seller = await Seller.findOne({ _id: req.body.userId });
     bcrypt.compare(req.body.otp.toString(), userOTP.otp, function (err, response) {
-        // console.log(response);
         if (err) {
-            console.log(err);
             return res.status(500).send(err);
         }
         if (response) {
@@ -403,9 +399,7 @@ app.post('/verify-admin-otp', async (req, res) => {
     }
     let admin = await Admin.findOne({ _id: req.body.userId });
     bcrypt.compare(req.body.otp.toString(), userOTP.otp, function (err, response) {
-        // console.log(response);
         if (err) {
-            console.log(err);
             return res.status(500).send(err);
         }
         if (response) {
