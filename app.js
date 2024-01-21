@@ -449,7 +449,3 @@ app.put('/verify-product/:id', verifyToken('admin'), async (req, res) => {
         res.send({ valid: true });
     }
 })
-
-app.listen(5000, () => {
-    console.log("Server tuned to port 5000");
-})
