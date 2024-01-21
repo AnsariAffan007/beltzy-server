@@ -16,8 +16,8 @@ async function imageUploader(file, res) {
     data: data
   };
 
-  const response = await axios(config);
   try {
+    const response = await axios(config);
     if (response) {
       let imageUrl = response.data.data.link;
       let hash = response.data.data.deletehash;
