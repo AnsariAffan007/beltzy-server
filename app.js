@@ -164,7 +164,7 @@ app.put('/confirm-delivery', verifyToken('buyer'), async (req, res) => {
 app.post("/update-buyer", verifyToken('buyer'), async (req, res, next) => {
     let updatedBuyer = await Buyer.findOneAndUpdate({ username: req.body[0] }, req.body[1], { new: true });
     updatedBuyer.role = 'buyer';
-    Jwt.sign({ updatedBuyer }, process.env.JWT_KEY, { expiresIn: '2h' }, (error, token) => {
+    Jwt.sign({ buyer: updatedBuyer }, process.env.JWT_KEY, { expiresIn: '2h' }, (error, token) => {
         if (error) res.send(error);
         updatedBuyer.password = undefined;
         res.send({ updatedBuyer, token: token });
