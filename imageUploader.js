@@ -1,23 +1,31 @@
-const imgur = require('imgur');
-const fs = require('fs');
-const util = require('util');
+var axios = require('axios');
+var FormData = require('form-data');
 
 async function imageUploader(file, res) {
-  let uploadPath = __dirname + '/uploads/' + file.name;
 
-  const mvPromise = util.promisify(file.mv);
+  var data = new FormData();
+  data.append('image', file.data);
+  const config = {
+    method: 'post',
+    maxBodyLength: Infinity,
+    url: 'https://api.imgur.com/3/image',
+    headers: {
+      Authorization: 'Client-ID ' + process.env.IMGUR_CLIENT_ID,
+      ...data.getHeaders()
+    },
+    data: data
+  };
 
+  const response = await axios(config);
   try {
-    await mvPromise(uploadPath);
-    const urlObject = await imgur.uploadFile(uploadPath);
-    fs.unlinkSync(uploadPath);
-    const imageUrl = urlObject.data.link;
-    const hash = urlObject.data.deletehash;
-    return { imageUrl, hash };
+    if (response) {
+      let imageUrl = response.data.data.link;
+      let hash = response.data.data.deletehash;
+      return { imageUrl, hash };
+    }
   }
   catch (err) {
-    fs.unlinkSync(uploadPath);
-    res.status(500).send({ message: "Couldn't upload Image! Please try again" })
+    res.status(500).send(err);
   }
 }
 

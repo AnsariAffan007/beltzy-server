@@ -24,7 +24,11 @@ app.use(cors({
     credentials: true
 }))
 
-mongoose.connect(process.env.MONGO_URI);
+mongoose.connect(process.env.MONGO_URI).then(() => {
+    app.listen(5000, () => {
+        console.log("Server tuned to port 5000");
+    })
+});
 
 app.get('/best-selling', async (req, res) => {
     let bestSelling = await Product.find({ verified: true }).select('-createdAt -verified -__v').sort({ 'sold': -1 }).limit(4);
@@ -161,10 +165,10 @@ app.put('/confirm-delivery', verifyToken('buyer'), async (req, res) => {
 app.post("/update-buyer", verifyToken('buyer'), async (req, res, next) => {
     let updatedBuyer = await Buyer.findOneAndUpdate({ username: req.body[0] }, req.body[1], { new: true });
     updatedBuyer.role = 'buyer';
-    Jwt.sign({ updatedBuyer }, process.env.JWT_KEY, { expiresIn: '2h' }, (error, token) => {
+    Jwt.sign({ buyer: updatedBuyer }, process.env.JWT_KEY, { expiresIn: '2h' }, (error, token) => {
         if (error) res.send(error);
         updatedBuyer.password = undefined;
-        res.send({ updatedBuyer, token: token });
+        res.send({ buyer: updatedBuyer, token: token });
     })
 })
 
@@ -450,8 +454,4 @@ app.put('/verify-product/:id', verifyToken('admin'), async (req, res) => {
         let updatedProduct = await Product.findOneAndUpdate({ _id: req.params.id }, { verified: req.body.verified }, { new: true });
         res.send({ valid: true });
     }
-})
-
-app.listen(5000, () => {
-    console.log("Server tuned to port 5000");
 })
