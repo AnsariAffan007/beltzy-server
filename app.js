@@ -167,7 +167,7 @@ app.post("/update-buyer", verifyToken('buyer'), async (req, res, next) => {
     Jwt.sign({ buyer: updatedBuyer }, process.env.JWT_KEY, { expiresIn: '2h' }, (error, token) => {
         if (error) res.send(error);
         updatedBuyer.password = undefined;
-        res.send({ updatedBuyer, token: token });
+        res.send({ buyer: updatedBuyer, token: token });
     })
 })
 
