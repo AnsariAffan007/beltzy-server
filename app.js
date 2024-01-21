@@ -20,7 +20,11 @@ app.use(express.json({ limit: '50mb' }));
 app.use(fileUpload())
 app.use(express.urlencoded({ extended: true }));
 
-mongoose.connect(process.env.MONGO_URI);
+mongoose.connect(process.env.MONGO_URI).then(() => {
+    app.listen(5000, () => {
+        console.log("Server tuned to port 5000");
+    })
+});
 
 app.get('/best-selling', async (req, res) => {
     let bestSelling = await Product.find({ verified: true }).select('-createdAt -verified -__v').sort({ 'sold': -1 }).limit(4);
