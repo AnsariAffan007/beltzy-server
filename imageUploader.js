@@ -15,17 +15,12 @@ async function imageUploader(file, res) {
     },
     data: data
   };
-
-  try {
-    const response = await axios(config);
-    if (response) {
-      let imageUrl = response.data.data.link;
-      let hash = response.data.data.deletehash;
-      return { imageUrl, hash };
-    }
-  }
-  catch (err) {
-    res.status(500).send(err);
+  
+  const response = await axios(config);
+  if (response) {
+    let imageUrl = response.data.data.link;
+    let hash = response.data.data.deletehash;
+    return { imageUrl, hash };
   }
 }
 
