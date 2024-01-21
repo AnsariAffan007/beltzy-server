@@ -3,7 +3,7 @@ const fs = require('fs');
 const util = require('util');
 
 async function imageUploader(file, res) {
-  let uploadPath = __dirname + '/uploads/' + file.name;
+  let uploadPath = '.uploads/' + file.name;
 
   const mvPromise = util.promisify(file.mv);
 
